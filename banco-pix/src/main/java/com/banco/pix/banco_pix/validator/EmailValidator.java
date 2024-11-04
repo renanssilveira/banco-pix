@@ -1,4 +1,4 @@
-package validator;
+package com.banco.pix.banco_pix.validator;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;

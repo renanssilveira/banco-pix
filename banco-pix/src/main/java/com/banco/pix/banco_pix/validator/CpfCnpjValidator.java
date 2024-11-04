@@ -1,7 +1,10 @@
-package validator;
+package com.banco.pix.banco_pix.validator;
+
+import org.springframework.stereotype.Service;
 
 import java.util.InputMismatchException;
 
+@Service
 public class CpfCnpjValidator  {
 
 
