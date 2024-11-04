@@ -14,14 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.Objects;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
 
 @Service
 @Slf4j
-public class PixService {
+public class CadastraPixService {
 
   @Autowired private ChaveRepository chaveRepository;
 
