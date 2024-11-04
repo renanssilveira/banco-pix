@@ -24,7 +24,7 @@ public class TransacaoController {
     public ResponseEntity<CriaChaveResponse> criaChavePix(@RequestBody @Valid CriaChaveRequest criaChaveRequest) {
 
 
-        return ResponseEntity.ok(CriaChaveResponse.builder().NumeroIdentificacao(pixService.criaConta(criaChaveRequest)).build());
+        return ResponseEntity.ok(CriaChaveResponse.builder().NumeroIdentificacao(pixService.cadastraChavePix(criaChaveRequest)).build());
 
 
     }

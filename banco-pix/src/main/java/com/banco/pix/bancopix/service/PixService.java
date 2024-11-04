@@ -1,135 +1,159 @@
 package com.banco.pix.bancopix.service;
 
-import com.banco.pix.bancopix.converter.ContaConverter;
 import com.banco.pix.bancopix.domain.TipoChave;
 import com.banco.pix.bancopix.domain.TipoConta;
 import com.banco.pix.bancopix.dtos.CriaChaveRequest;
+import com.banco.pix.bancopix.entity.Chave;
 import com.banco.pix.bancopix.entity.Conta;
 import com.banco.pix.bancopix.exceptions.BancoFullException;
+import com.banco.pix.bancopix.repository.ChaveRepository;
 import com.banco.pix.bancopix.repository.ContaRepository;
 import com.banco.pix.bancopix.validator.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import javax.validation.constraints.NotEmpty;
+import java.util.Objects;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
 
 @Service
 @Slf4j
 public class PixService {
 
-    @Autowired
-    private ContaRepository contaRepository;
+  @Autowired private ChaveRepository chaveRepository;
 
-    @Autowired
-    private CpfCnpjValidator cpfCnpjValidator;
+  @Autowired private ContaRepository contaRepository;
 
-    @Autowired
-    private EmailValidator emailValidator;
+  @Autowired private CpfCnpjValidator cpfCnpjValidator;
 
-    @Autowired
-    private ContaConverter contaConverter;
+  @Autowired private EmailValidator emailValidator;
 
-    @Autowired
-    private CelularValidator celularValidator;
+  @Autowired private CelularValidator celularValidator;
 
-    @Autowired
-    private AleatorioValidator aleatorioValidator;
+  @Autowired private AleatorioValidator aleatorioValidator;
 
-    @Autowired
-    private AgenciaValidator agenciaValidator;
+  @Autowired private AgenciaValidator agenciaValidator;
 
-    @Autowired
-    private ContaValidator contaValidator;
+  @Autowired private ContaValidator contaValidator;
+
+  public UUID cadastraChavePix(CriaChaveRequest chaveRequest) {
 
 
-    public String criaConta(CriaChaveRequest contaRequest) {
-        log.info("A conta esta aqui : {}", contaRequest);
+    TipoChave tipoChave = validaTipoChave(chaveRequest.getTipoChave());
 
-        TipoChave tipoChave = validaTipoChave(contaRequest.getTipoChave());
-
-        switch (tipoChave) {
-            case CPF -> validaCPF(contaRequest.getValorChave());
-            case CNPJ -> validaCNPJ(contaRequest.getValorChave());
-            case EMAIL -> validaEmail(contaRequest.getValorChave());
-            case CELULAR -> validaCelular(contaRequest.getValorChave());
-            case ALEATORIO -> validaAleatorio(contaRequest.getValorChave());
-        }
-
-        validaTipoConta(contaRequest.getTipoConta());
-        validaAgencia(contaRequest.getNumeroAgencia());
-        validaConta(contaRequest.getNumeroConta());
-
-
-        Set<Conta> listaContas = listaContas(contaRequest.getNumeroAgencia(), contaRequest.getNumeroConta());
-        Conta conta = new Conta(contaRequest);
-        String id = contaRepository.save(conta).getId();
-
-        return contaRepository.save(new Conta(contaRequest)).getId();
+    switch (tipoChave) {
+      case CPF -> validaCPF(chaveRequest.getValorChave());
+      case CNPJ -> validaCNPJ(chaveRequest.getValorChave());
+      case EMAIL -> validaEmail(chaveRequest.getValorChave());
+      case CELULAR -> validaCelular(chaveRequest.getValorChave());
+      case ALEATORIO -> validaAleatorio(chaveRequest.getValorChave());
     }
 
-    public TipoChave validaTipoChave(String chave) {
-        try {
-            return TipoChave.valueOf(chave.toUpperCase());
-        } catch (IllegalArgumentException exception) {
-            throw new BancoFullException("Tipo de Chave Invalido");
-        }
-    }
+    validaChaveDuplicada(chaveRequest.getValorChave());
+    validaTipoConta(chaveRequest.getTipoConta());
+    validaAgencia(chaveRequest.getNumeroAgencia());
+    validaConta(chaveRequest.getNumeroConta());
+    validaQtdChaves(chaveRequest);
 
-    public void validaTipoConta(String tipoConta) {
-        try {
-            TipoConta.valueOf(tipoConta.toUpperCase());
-        } catch (IllegalArgumentException exception) {
-            throw new BancoFullException("Tipo da Conta Invalido");
-        }
-    }
+    return chaveRepository.save(new Chave(chaveRequest)).getIdentificacaoId();
+  }
 
-    public void validaCPF(String chave) {
-        if (!cpfCnpjValidator.isCpf(chave)) {
-            throw new BancoFullException("CPF invalido");
-        }
+  public TipoChave validaTipoChave(@NotEmpty String chave) {
+    try {
+      return TipoChave.valueOf(chave.toUpperCase());
+    } catch (IllegalArgumentException exception) {
+      throw new BancoFullException("Tipo de Chave Invalido");
     }
+  }
 
-    public void validaCNPJ(String chave) {
-        if (!cpfCnpjValidator.isCnpj(chave)) {
-            throw new BancoFullException("CNPJ invalido");
-        }
+  public void validaTipoConta(String tipoConta) {
+    try {
+      TipoConta.valueOf(tipoConta.toUpperCase());
+    } catch (IllegalArgumentException exception) {
+      throw new BancoFullException("Tipo da Conta Invalido");
     }
+  }
 
-    public void validaEmail(String chave) {
-        if (!emailValidator.isValidEmailAddress(chave)) {
-            throw new BancoFullException("EMAIL invalido");
-        }
+  public void validaCPF(String chave) {
+    if (!cpfCnpjValidator.isCpf(chave)) {
+      throw new BancoFullException("CPF invalido");
     }
+  }
 
-    public void validaCelular(String chave) {
-        if (!celularValidator.isValidCelular(chave)) {
-            throw new BancoFullException("Celular invalido. Exemplo : +5511900000000");
-        }
+  public void validaCNPJ(String chave) {
+    if (!cpfCnpjValidator.isCnpj(chave)) {
+      throw new BancoFullException("CNPJ invalido");
     }
+  }
 
-    public void validaAleatorio(String chave) {
-        if (!aleatorioValidator.isValidAleatorio(chave)) {
-            throw new BancoFullException("Chave Aleatória invalida.");
-        }
+  public void validaEmail(String chave) {
+    if (!emailValidator.isValidEmailAddress(chave)) {
+      throw new BancoFullException("EMAIL invalido");
     }
+  }
 
-    public void validaAgencia(String agencia) {
-        if (!agenciaValidator.isValidAgencia(agencia)) {
-            throw new BancoFullException("Numero da Agencia invalida.");
-        }
+  public void validaCelular(String chave) {
+    if (!celularValidator.isValidCelular(chave)) {
+      throw new BancoFullException("Celular invalido. Exemplo : +5511900000000");
     }
+  }
 
-    public void validaConta(String conta) {
-        if (!aleatorioValidator.isValidAleatorio(conta)) {
-            throw new BancoFullException("Numero da Conta invalido.");
-        }
+  public void validaAleatorio(String chave) {
+    if (!aleatorioValidator.isValidAleatorio(chave)) {
+      throw new BancoFullException("Chave Aleatória invalida.");
     }
+  }
 
-    public Set<Conta> listaContas(String agencia, String conta){
-        return contaRepository.findBynumeroAgenciaAndnumeroConta(agencia, conta);
+  public void validaAgencia(String agencia) {
+    if (!agenciaValidator.isValidAgencia(agencia)) {
+      throw new BancoFullException("Numero da Agencia invalida.");
     }
+  }
 
+  public void validaConta(String conta) {
+    if (!aleatorioValidator.isValidAleatorio(conta)) {
+      throw new BancoFullException("Numero da Conta invalido.");
+    }
+  }
+
+  public void validaQtdChaves(CriaChaveRequest chaveRequest) {
+    Conta conta =
+        contaRepository.findByNumeroAgenciaAndNumeroConta(
+            chaveRequest.getNumeroAgencia(), chaveRequest.getNumeroConta());
+    if (isNull(conta)) {
+      throw new BancoFullException("Conta não Encontrada");
+    }
+    if (conta.getPerfil().equals("PF")) {
+      log.info(
+          String.valueOf(
+              chaveRepository
+                  .findByNumeroAgenciaAndNumeroConta(
+                      chaveRequest.getNumeroAgencia(), chaveRequest.getNumeroConta())
+                  .size()));
+      if (chaveRepository
+              .findByNumeroAgenciaAndNumeroConta(
+                  chaveRequest.getNumeroAgencia(), chaveRequest.getNumeroConta())
+              .size()
+          >= 5) {
+        throw new BancoFullException("Limite de Chave Atigido");
+      }
+    } else {
+      if (chaveRepository
+              .findByNumeroAgenciaAndNumeroConta(
+                  chaveRequest.getNumeroAgencia(), chaveRequest.getNumeroConta())
+              .size()
+          >= 20) {
+        throw new BancoFullException("Limite de Chave Atigido");
+      }
+    }
+  }
+
+  public void validaChaveDuplicada(String chave) {
+    if (chaveRepository.findByValorChave(chave).isPresent()) {
+      throw new BancoFullException("Chave ja cadastrada");
+    }
+  }
 }
