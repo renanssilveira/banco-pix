@@ -1,4 +1,4 @@
-package com.banco.pix.banco_pix.validator;
+package com.banco.pix.bancopix.validator;
 
 import org.springframework.stereotype.Service;
 

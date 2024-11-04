@@ -1,4 +1,4 @@
-package com.banco.pix.banco_pix.dtos;
+package com.banco.pix.bancopix.dtos;
 
 import lombok.Builder;
 import lombok.Data;
@@ -9,5 +9,5 @@ import java.util.UUID;
 @Builder
 public class CriaChaveResponse {
 
-    private UUID NumeroIdentificacao;
+    private String NumeroIdentificacao;
 }

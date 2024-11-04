@@ -1,4 +1,4 @@
-package com.banco.pix.banco_pix;
+package com.banco.pix.bancopix;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
