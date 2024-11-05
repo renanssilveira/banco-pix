@@ -113,7 +113,7 @@ public class CadastraPixService {
   }
 
   public void validaConta(String conta) {
-    if (!aleatorioValidator.isValidAleatorio(conta)) {
+    if (!contaValidator.isValidConta(conta)) {
       throw new BancoFullException("Numero da Conta invalido.");
     }
   }

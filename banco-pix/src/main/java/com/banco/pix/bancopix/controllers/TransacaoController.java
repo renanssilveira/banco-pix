@@ -1,12 +1,12 @@
 package com.banco.pix.bancopix.controllers;
 
-import com.banco.pix.bancopix.dtos.ConsultaChaveResponse;
-import com.banco.pix.bancopix.dtos.CriaChaveRequest;
-import com.banco.pix.bancopix.dtos.CriaChaveResponse;
+import com.banco.pix.bancopix.dtos.*;
 import com.banco.pix.bancopix.service.CadastraPixService;
 import com.banco.pix.bancopix.service.ConsultaPixService;
 import java.util.Set;
 import javax.validation.Valid;
+
+import com.banco.pix.bancopix.service.EditaPixService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +17,7 @@ public class TransacaoController {
 
   @Autowired private CadastraPixService cadastraPixService;
   @Autowired private ConsultaPixService consultaPixService;
+  @Autowired private EditaPixService editaPixService;
 
   @PostMapping("/criar")
   public ResponseEntity<CriaChaveResponse> criaChavePix(
@@ -41,5 +42,11 @@ public class TransacaoController {
     return ResponseEntity.ok(
         consultaPixService.consultaByFilter(
            identificacao, tipoChave, agencia, conta, nome, dtInclusao, dtInativacao));
+  }
+
+  @PatchMapping("/edicao")
+  public ResponseEntity<EditaResponse> editacaoConta(@RequestBody @Valid EditaRequest editaRequest){
+
+    return ResponseEntity.ok(editaPixService.editaConta(editaRequest));
   }
 }
