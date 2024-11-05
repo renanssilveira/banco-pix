@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 public class ConsultaChaveResponse {
     
-    private String NumeroIdentificacao;
+    private String identificacao;
     private String tipoChave;
     private String valorChave;
     private String tipoConta;

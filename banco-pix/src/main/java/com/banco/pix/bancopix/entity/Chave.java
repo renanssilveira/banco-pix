@@ -47,8 +47,7 @@ public class Chave {
         Locale loc = new Locale("pt", "BR");
         Locale.setDefault(loc);
 
-        this.dataInclusao = LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
+        this.dataInclusao = LocalDateTime.now().toString();
     }
 
     public UUID getIdentificacaoId() {

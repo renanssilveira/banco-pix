@@ -14,4 +14,6 @@ public interface ChaveRepository extends JpaRepository<Chave, UUID> {
     Set<Chave> findByNumeroAgenciaAndNumeroConta(String agencia, String conta);
 
     Optional<Chave> findByValorChave(String chave);
+
+
 }

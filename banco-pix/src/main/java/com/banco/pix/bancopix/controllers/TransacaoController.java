@@ -5,12 +5,11 @@ import com.banco.pix.bancopix.dtos.CriaChaveRequest;
 import com.banco.pix.bancopix.dtos.CriaChaveResponse;
 import com.banco.pix.bancopix.service.CadastraPixService;
 import com.banco.pix.bancopix.service.ConsultaPixService;
+import java.util.Set;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 
 @RestController
 @RequestMapping("/api/v1/pix")
@@ -29,21 +28,18 @@ public class TransacaoController {
             .build());
   }
 
-  @GetMapping("/consulta/identificacao/{identificacao}")
-  public ResponseEntity<ConsultaChaveResponse> criaChavePix(
-      @PathVariable @NotEmpty String identificacao) {
-    return ResponseEntity.ok(consultaPixService.cadastraChavePix(identificacao));
-  }
-
   @GetMapping("/consulta/filtros")
-  public ResponseEntity<ConsultaChaveResponse> consultaByFilter(
-      @RequestParam String tipoChave,
-      @RequestParam String agenciaConta,
-      @RequestParam String nome,
-      @RequestParam String dtInclusao,
-      @RequestParam String dtInativacao) {
+  public ResponseEntity<Set<ConsultaChaveResponse>> consultaByFilter(
+      @RequestParam(required = false) String identificacao,
+      @RequestParam(required = false) String tipoChave,
+      @RequestParam(required = false) String agencia,
+      @RequestParam(required = false) String conta,
+      @RequestParam(required = false) String nome,
+      @RequestParam(required = false) String dtInclusao,
+      @RequestParam(required = false) String dtInativacao) {
 
-    return null;
-
+    return ResponseEntity.ok(
+        consultaPixService.consultaByFilter(
+           identificacao, tipoChave, agencia, conta, nome, dtInclusao, dtInativacao));
   }
 }
