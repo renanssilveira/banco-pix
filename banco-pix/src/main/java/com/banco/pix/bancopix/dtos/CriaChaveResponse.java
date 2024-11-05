@@ -9,5 +9,5 @@ import java.util.UUID;
 @Builder
 public class CriaChaveResponse {
 
-    private String NumeroIdentificacao;
+    private UUID NumeroIdentificacao;
 }
