@@ -1,24 +1,19 @@
 package com.banco.pix.bancopix.service;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import com.banco.pix.bancopix.domain.TipoConta;
-import com.banco.pix.bancopix.dtos.ConsultaChaveResponse;
 import com.banco.pix.bancopix.dtos.EditaRequest;
 import com.banco.pix.bancopix.dtos.EditaResponse;
 import com.banco.pix.bancopix.entity.Chave;
 import com.banco.pix.bancopix.exceptions.BancoFullException;
 import com.banco.pix.bancopix.exceptions.BancoNotFoundException;
 import com.banco.pix.bancopix.repository.ChaveRepository;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
 import com.banco.pix.bancopix.validator.AgenciaValidator;
 import com.banco.pix.bancopix.validator.ContaValidator;
 import com.banco.pix.bancopix.validator.NomeValidator;
 import com.banco.pix.bancopix.validator.SobreNomeValidator;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
