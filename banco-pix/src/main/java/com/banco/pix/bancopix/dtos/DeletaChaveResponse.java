@@ -17,4 +17,6 @@ public class DeletaChaveResponse {
     private String sobreNomeCorrentista;
     private String dataInclusao;
     private String dataInativacao;
+
+
 }
