@@ -1,12 +1,14 @@
 package com.banco.pix.bancopix.controllers;
 
-import com.banco.pix.bancopix.dtos.ConsultaChaveResponse;
-import com.banco.pix.bancopix.dtos.CriaChaveRequest;
-import com.banco.pix.bancopix.dtos.CriaChaveResponse;
+import com.banco.pix.bancopix.dtos.*;
 import com.banco.pix.bancopix.service.CadastraPixService;
 import com.banco.pix.bancopix.service.ConsultaPixService;
 import java.util.Set;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+
+import com.banco.pix.bancopix.service.DeletaPixService;
+import com.banco.pix.bancopix.service.EditaPixService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +19,10 @@ public class TransacaoController {
 
   @Autowired private CadastraPixService cadastraPixService;
   @Autowired private ConsultaPixService consultaPixService;
+  @Autowired private EditaPixService editaPixService;
+  @Autowired private DeletaPixService deletaPixService;
 
-  @PostMapping("/criar")
+  @PostMapping()
   public ResponseEntity<CriaChaveResponse> criaChavePix(
       @RequestBody @Valid CriaChaveRequest criaChaveRequest) {
 
@@ -28,7 +32,7 @@ public class TransacaoController {
             .build());
   }
 
-  @GetMapping("/consulta/filtros")
+  @GetMapping("/filtros")
   public ResponseEntity<Set<ConsultaChaveResponse>> consultaByFilter(
       @RequestParam(required = false) String identificacao,
       @RequestParam(required = false) String tipoChave,
@@ -41,5 +45,17 @@ public class TransacaoController {
     return ResponseEntity.ok(
         consultaPixService.consultaByFilter(
            identificacao, tipoChave, agencia, conta, nome, dtInclusao, dtInativacao));
+  }
+
+  @PatchMapping()
+  public ResponseEntity<EditaResponse> editacaoConta(@RequestBody @Valid EditaRequest editaRequest){
+
+    return ResponseEntity.ok(editaPixService.editaConta(editaRequest));
+  }
+
+  @DeleteMapping("/identificacao/{identificacao}")
+  public ResponseEntity<DeletaChaveResponse> deletaChave(@PathVariable String identificacao){
+
+    return ResponseEntity.ok(deletaPixService.deletaChave(identificacao));
   }
 }

@@ -38,6 +38,9 @@ public class CadastraPixService {
 
   @Autowired private ContaValidator contaValidator;
 
+  @Autowired private NomeValidator nomeValidator;
+
+  @Autowired private SobreNomeValidator sobreNomeValidator;
   public UUID cadastraChavePix(CriaChaveRequest chaveRequest) {
 
 
@@ -55,6 +58,8 @@ public class CadastraPixService {
     validaTipoConta(chaveRequest.getTipoConta());
     validaAgencia(chaveRequest.getNumeroAgencia());
     validaConta(chaveRequest.getNumeroConta());
+    validaNome(chaveRequest.getNomeCorrentista());
+    validaSobreNome(chaveRequest.getSobreNomeCorrentista());
     validaQtdChaves(chaveRequest);
 
     return chaveRepository.save(new Chave(chaveRequest)).getIdentificacaoId();
@@ -113,8 +118,20 @@ public class CadastraPixService {
   }
 
   public void validaConta(String conta) {
-    if (!aleatorioValidator.isValidAleatorio(conta)) {
+    if (!contaValidator.isValidConta(conta)) {
       throw new BancoFullException("Numero da Conta invalido.");
+    }
+  }
+
+  public void validaNome(String nome){
+    if (!nomeValidator.isValidNome(nome)) {
+      throw new BancoFullException("Nome invalido.");
+    }
+  }
+
+  public void validaSobreNome(String sobreNome){
+    if (!sobreNomeValidator.isValidSobreNome(sobreNome)) {
+      throw new BancoFullException("SobreNome invalido.");
     }
   }
 
